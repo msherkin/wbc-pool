@@ -461,6 +461,23 @@
             </div>
         </div>
 
+        <!-- Tiebreakers -->
+        <h2 style="text-align: center; font-family:'Oswald', sans-serif; text-transform:uppercase; margin-top: 40px;">4. Tiebreakers</h2>
+        <div class="form-section">
+            <div class="select-group">
+                <label for="tiebreaker1">Total Home Runs in Tournament (Estimate)</label>
+                <input type="number" id="tiebreaker1" name="tiebreaker1" placeholder="e.g. 150" required>
+            </div>
+            <div class="select-group">
+                <label for="tiebreaker2">Total Runs in Tournament (Estimate)</label>
+                <input type="number" id="tiebreaker2" name="tiebreaker2" placeholder="e.g. 800" required>
+            </div>
+            <div class="select-group">
+                <label for="tiebreaker3">Total Runs in Championship Game (Estimate)</label>
+                <input type="number" id="tiebreaker3" name="tiebreaker3" placeholder="e.g. 9" required>
+            </div>
+        </div>
+
         <button type="submit" class="submit-btn">Submit Picks</button>
         <div id="statusMessage" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
 
@@ -492,7 +509,7 @@
 
     <script>
         // REPLACE THIS URL with your deployed Web App URL
-        const SCRIPT_URL = 'PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE'; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGg-tAR1m2VGIrKb9BN0vHAKENK8jXZxAt4zMHyoZR_ekFQqZcKQrADzaciWgdcA-mfA/exec'; 
 
         // --- Logic to handle Bracket interaction ---
 
@@ -628,7 +645,12 @@
                 qf4: getWinner('qf4'),
                 sf1: getWinner('sf1'),
                 sf2: getWinner('sf2'),
-                champion: getWinner('final')
+                champion: getWinner('final'),
+                
+                // Tiebreakers
+                tb1: document.getElementById('tiebreaker1').value,
+                tb2: document.getElementById('tiebreaker2').value,
+                tb3: document.getElementById('tiebreaker3').value
             };
 
             // Validation

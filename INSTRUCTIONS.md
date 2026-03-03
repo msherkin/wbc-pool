@@ -47,6 +47,20 @@ To share the link with friends, you can host `index.html` for free on:
 - **Netlify Drop** (Drag and drop the folder)
 - or just email the file to them (they can open it locally, it still works!).
 
-## Step 6: Viewing Results
-To allow your friends to view the leaderboard on the same page, you need to ensure your Google Sheet has a sheet named "Leaderboard". The `Code.gs` script is set up to read from this sheet and send the data back to the app.
-Make sure you have set up the "Leaderboard" sheet as described in the "Leaderboard (Automatic Scoring)" section of the previous instructions (Step 3). Specifically, ensure columns A, B, and C are Rank, Name, and Total Points respectively.
+## Step 6: Setup Standings & Scoring
+1. In your Google Sheet, you will now see a new menu at the top called **🏆 WBC Bracket** (you may need to refresh the page after saving the script).
+2. Click **🏆 WBC Bracket** > **Setup Sheets**. This will create three sheets: `Picks`, `Results`, and `Leaderboard`.
+3. **Entering Results:** As games are played, go to the **Results** sheet and type the name of the winning team in the "Actual Winner" column next to the corresponding match.
+4. **Updating Standings:** Every time a new pick is submitted, the standings update automatically. If you want to force an update after entering results, click **🏆 WBC Bracket** > **Calculate Scores & Standings**.
+
+## Step 7: Viewing Results
+The `index.html` page is already set up to show the leaderboard. Your friends can see their rank and total points directly on the page!
+
+### Scoring System (Official MLB Rules):
+- **Pool Advancement:** 10 points for each correct team advancing to QFs (max 80 pts).
+- **Correct Pool Order Bonus:** 5 points for each pool where you get both the Winner and Runner-up in the correct order (max 20 pts).
+- **Semifinalists:** 10 points for each correct team reaching the Semifinals (max 40 pts).
+- **Finalists:** 20 points for each correct team reaching the Championship Game (max 40 pts).
+- **Champion:** 20 points for correctly picking the winner.
+- **Tiebreakers:** 10 points for each correct estimate (3 questions, max 30 pts).
+- **Maximum Possible Score:** 230 points.
