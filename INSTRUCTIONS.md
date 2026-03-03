@@ -46,3 +46,7 @@ To share the link with friends, you can host `index.html` for free on:
 - **GitHub Pages** (Upload the file to a repo -> Settings -> Pages)
 - **Netlify Drop** (Drag and drop the folder)
 - or just email the file to them (they can open it locally, it still works!).
+
+## Step 6: Viewing Results
+To allow your friends to view the leaderboard on the same page, you need to ensure your Google Sheet has a sheet named "Leaderboard". The `Code.gs` script is set up to read from this sheet and send the data back to the app.
+Make sure you have set up the "Leaderboard" sheet as described in the "Leaderboard (Automatic Scoring)" section of the previous instructions (Step 3). Specifically, ensure columns A, B, and C are Rank, Name, and Total Points respectively.

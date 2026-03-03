@@ -215,6 +215,50 @@
             display: none;
             margin-top: 10px;
         }
+        
+        /* --- Leaderboard Styling --- */
+        .leaderboard-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+
+        thead {
+            background-color: var(--primary-blue);
+            color: white;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .rank-circle {
+            background: var(--accent-red);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
 
     </style>
 </head>
@@ -222,18 +266,26 @@
 
     <header>
         <h1>WBC 2026 Picks</h1>
-        <p>Make your predictions!</p>
+        <p>Make your predictions & See the Standings!</p>
     </header>
+    
+    <!-- TABS (Simple buttons to scroll) -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button onclick="document.getElementById('picksForm').scrollIntoView({behavior: 'smooth'})" style="padding: 10px 20px; margin-right: 10px; cursor: pointer;">Enter Picks</button>
+        <button onclick="document.getElementById('leaderboardSection').scrollIntoView({behavior: 'smooth'})" style="padding: 10px 20px; cursor: pointer;">View Leaderboard</button>
+    </div>
 
     <form id="picksForm">
         
         <!-- Player Info -->
         <div class="form-section">
+            <h2 style="margin-top:0;">1. Enter Your Info</h2>
             <label for="playerName">Your Name</label>
             <input type="text" id="playerName" name="playerName" placeholder="Enter your full name" required>
         </div>
 
         <!-- Pools Section -->
+        <h2 style="text-align: center;">2. Pick Pool Winners</h2>
         <div class="pools-grid">
             <!-- Pool A -->
             <div class="pool-card">
@@ -345,8 +397,8 @@
         </div>
 
         <!-- Interactive Bracket -->
-        <h2 style="text-align: center; font-family:'Oswald', sans-serif; text-transform:uppercase;">Playoff Bracket</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">Click on a team to advance them to the next round!</p>
+        <h2 style="text-align: center; font-family:'Oswald', sans-serif; text-transform:uppercase;">3. Complete the Bracket</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Click on a team to advance them!</p>
         
         <div class="bracket-container">
             <div class="bracket">
@@ -413,8 +465,35 @@
         <div id="statusMessage" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
 
     </form>
+    
+    <!-- LEADERBOARD SECTION -->
+    <div id="leaderboardSection" class="leaderboard-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+             <h2 style="margin:0;">Current Standings</h2>
+             <button onclick="fetchLeaderboard()" style="padding: 5px 15px; cursor: pointer;">🔄 Refresh</button>
+        </div>
+        <p style="color:#666; margin-bottom: 20px;">Scores are updated after every game.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Rank</th>
+                    <th>Participant</th>
+                    <th style="text-align: right;">Points</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <tr>
+                    <td colspan="3" style="text-align:center; padding: 20px;">Loading standings...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <script>
+        // REPLACE THIS URL with your deployed Web App URL
+        const SCRIPT_URL = 'PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE'; 
+
         // --- Logic to handle Bracket interaction ---
 
         // Config: Which Pool slot goes where?
@@ -564,11 +643,8 @@
             submitBtn.disabled = true;
             submitBtn.textContent = "Submitting...";
             
-            // REPLACE THIS URL with your deployed Web App URL
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvbwSD76Dn4O67gzLhIzfN62xKeAHuOG0R7G7RcXyicmsaHqwePl3-h-a6evhcbls_aQ/exec'; 
-
             if (SCRIPT_URL.includes('PASTE')) {
-                alert("Setup Required: You need to paste your Google Script URL in the index.html file (Line 285).");
+                alert("Setup Required: You need to paste your Google Script URL in the index.html file.");
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Submit Picks";
                 return;
@@ -586,6 +662,9 @@
                 statusMsg.textContent = "✅ Success! Your picks have been recorded.";
                 statusMsg.style.color = "green";
                 submitBtn.style.display = 'none';
+                
+                // Refresh Leaderboard
+                setTimeout(fetchLeaderboard, 2000);
             })
             .catch(error => {
                 statusMsg.textContent = "❌ Error submitting. Please try again.";
@@ -603,6 +682,54 @@
             if (btn2.classList.contains('selected')) return btn2.textContent;
             return "";
         }
+        
+        // --- Leaderboard Logic ---
+        function fetchLeaderboard() {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading...</td></tr>';
+            
+             if (SCRIPT_URL.includes('PASTE')) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Setup Required: Paste Script URL</td></tr>';
+                return;
+            }
+
+            fetch(SCRIPT_URL)
+            .then(response => response.json())
+            .then(data => {
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No picks submitted yet.</td></tr>';
+                     return;
+                }
+                
+                // Sort by Score (Desc) just in case
+                // data.sort((a, b) => b.score - a.score); 
+
+                data.forEach((row, index) => {
+                    // Create Rank Badge Color
+                    let rankColor = '#aaa'; // default grey
+                    if (row.rank == 1) rankColor = '#D50032'; // Gold/Red for 1st
+                    if (row.rank == 2) rankColor = '#002D72'; // Blue for 2nd
+                    if (row.rank == 3) rankColor = '#cd7f32'; // Bronze
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><div class="rank-circle" style="background:${rankColor}">${row.rank}</div></td>
+                        <td>${row.name}</td>
+                        <td style="text-align: right; font-weight: bold;">${row.score}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching leaderboard:', error);
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Error loading leaderboard.</td></tr>';
+            });
+        }
+        
+        // Auto-load leaderboard on start
+        fetchLeaderboard();
 
     </script>
 </body>
